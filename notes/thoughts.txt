@@ -1,0 +1,7 @@
+* Which of the parameters are most important for performance?
+
+* iperf system - Since we want it to be fast, should I make it compiled rather than scripted?
+
+* I guess we only care for a datacenter, so MTUs and things that TCP was designed for when it began do not matter.
+
+* 
