@@ -4,4 +4,6 @@
 
 * I guess we only care for a datacenter, so MTUs and things that TCP was designed for when it began do not matter.
 
-* 
+* What are our metrics? What do we want to optimize in the end?
+
+* Time for the sysctls is very small compared to the iperf test time. How should I optimize for performance? Is it worth it to use a compiled C program with libiperf?

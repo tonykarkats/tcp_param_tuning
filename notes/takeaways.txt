@@ -6,70 +6,10 @@ Tips for performance
       when BETTER performance is achieved with FEWER LARGE segments.
     * Sender can avoid sending small segments by waiting until window is large enough.
 
-2. TCP PARAMETERS
-----------------
+2. Improve TCP performance (From Wikipedia)
+------------------------------------------
 
-Parameter - Type - Default value (14.04.1-Ubuntu)
-================================================
-tcp_abort_on_overflow - BOOLEAN - 0
-tcp_adv_win_scale - INTEGER
-tcp_allowed_congestion_control - STRING
-tcp_app_win - INTEGER
-tcp_autocorking - BOOLEAN
-tcp_available_congestion_control - STRING
-tcp_base_mss - INTEGER
-tcp_congestion_control - STRING
-tcp_dsack - BOOLEAN
-tcp_early_retrans - INTEGER
-tcp_ecn - INTEGER
-tcp_ecn_fallback - BOOLEAN
-tcp_fack - BOOLEAN
-tcp_fin_timeout - INTEGER
-tcp_frto - INTEGER
-tcp_invalid_ratelimit - INTEGER
-tcp_keepalive_time - INTEGER
-tcp_keepalive_probes - INTEGER
-tcp_keepalive_intvl - INTEGER
-tcp_l3mdev_accept - BOOLEAN
-tcp_low_latency - BOOLEAN
-tcp_max_orphans - INTEGER
-tcp_max_syn_backlog - INTEGER
-tcp_max_tw_buckets - INTEGER
-tcp_mem - vector of 3 INTEGERs: min, pressure, max
-tcp_min_rtt_wlen - INTEGER
-tcp_moderate_rcvbuf - BOOLEAN
-tcp_mtu_probing - INTEGER
-tcp_probe_interval - INTEGER
-tcp_probe_threshold - INTEGER
-tcp_no_metrics_save - BOOLEAN
-tcp_orphan_retries - INTEGER
-tcp_recovery - INTEGER
-tcp_reordering - INTEGER
-tcp_max_reordering - INTEGER
-tcp_retrans_collapse - BOOLEAN
-tcp_retries1 - INTEGER
-tcp_retries2 - INTEGER
-tcp_rfc1337 - BOOLEAN
-tcp_rmem - vector of 3 INTEGERs: min, default, max
-tcp_sack - BOOLEAN
-tcp_slow_start_after_idle - BOOLEAN
-tcp_stdurg - BOOLEAN
-tcp_synack_retries - INTEGER
-tcp_syncookies - BOOLEAN
-tcp_fastopen - INTEGER
-tcp_syn_retries - INTEGER
-tcp_timestamps - INTEGER
-tcp_min_tso_segs - INTEGER
-tcp_pacing_ss_ratio - INTEGER
-tcp_pacing_ca_ratio - INTEGER
-tcp_tso_win_divisor - INTEGER
-tcp_tw_recycle - BOOLEAN
-tcp_tw_reuse - BOOLEAN
-tcp_window_scaling - BOOLEAN
-tcp_wmem - vector of 3 INTEGERs: min, default, max
-tcp_notsent_lowat - UNSIGNED INTEGER
-tcp_workaround_signed_windows - BOOLEAN
-tcp_thin_linear_timeouts - BOOLEAN
-tcp_thin_dupack - BOOLEAN
-tcp_limit_output_bytes - INTEGER
-tcp_challenge_ack_limit - INTEGER
+	* TCP timestamps for accurate measurement of RTT
+	* TCP window scaling
+	* TCP SACK
+	* Path MTU discovery to reduce fragmentation overhead
