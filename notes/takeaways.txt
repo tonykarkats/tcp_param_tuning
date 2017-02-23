@@ -13,3 +13,17 @@ Tips for performance
 	* TCP window scaling
 	* TCP SACK
 	* Path MTU discovery to reduce fragmentation overhead
+
+3. Evaluation Criteria for Resource Allocation (Peterson-Davie)
+--------------------------------------------------------------
+
+	*Power of the Network = Throughput/Delay
+		(-) It assumes M/M/1 queues and a single flow
+
+4. An Experimental Study of the Learnability of Congestion Control
+------------------------------------------------------------------
+
+	* Modelling a two-bottleneck network as a single bottleneck hurt performance only mildly.
+	* Weak evidence of a tradeoff between link speed operating range and performance.
+	* Performance at high degrees of multiplexing may be in opposition with performance when few flows share a bottleneck. --> Prior knowledge of the expected degree of multiplexing over bottleneck links can be very beneficial when designing a congestion control protocol.
+	* TCP awareness hurts performance when TCP cross-traffic is absent, but helps dramatically when present.

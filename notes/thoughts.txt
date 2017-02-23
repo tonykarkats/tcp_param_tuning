@@ -5,5 +5,12 @@
 * I guess we only care for a datacenter, so MTUs and things that TCP was designed for when it began do not matter.
 
 * What are our metrics? What do we want to optimize in the end?
+	- ANKIT: Mean Flow Completion Time BUT also take into account TPS, latency.
 
 * Time for the sysctls is very small compared to the iperf test time. How should I optimize for performance? Is it worth it to use a compiled C program with libiperf?
+
+* How will we take into account the different network characteristics?
+
+* Target Networks are Datacenters.
+
+* For the tests would it be better to use NS-2 instead of real time tests?
