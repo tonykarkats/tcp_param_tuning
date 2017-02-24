@@ -14,3 +14,7 @@
 * Target Networks are Datacenters.
 
 * For the tests would it be better to use NS-2 instead of real time tests?
+  In general virtualization / simulation methods could be preferable because we have
+  to tweak kernel parameters.
+
+

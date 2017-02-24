@@ -27,3 +27,27 @@ Tips for performance
 	* Weak evidence of a tradeoff between link speed operating range and performance.
 	* Performance at high degrees of multiplexing may be in opposition with performance when few flows share a bottleneck. --> Prior knowledge of the expected degree of multiplexing over bottleneck links can be very beneficial when designing a congestion control protocol.
 	* TCP awareness hurts performance when TCP cross-traffic is absent, but helps dramatically when present.
+
+5. About the OBJECTIVE FUNCTION
+-------------------------------
+
+Alpha fairness metric to evaluate allocations of throughput on shared links.
+A flow that receives steady-state throughput of x is assigned a score
+U_a(x) = x^(1-a) / (1-a)
+
+Then you try to maximize the sum of the scores
+
+6. DCTCP
+--------
+
+	Parameters to configure are:
+		* Marking threshold at the switches: K > (C * RTT)/7
+		* Estimation gain (weight given to new packets as DCTCP computes alpha:
+			g < 1.386 / (sqrt(2*(C * RTT + K)))
+	*****
+	Check out the section 4.3 "Benchmark Traffic" for evaluation using well-known traffic    patterns.
+	*****
+
+
+
+
