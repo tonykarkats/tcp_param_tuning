@@ -1,20 +1,37 @@
+==============
+OPEN QUESTIONS
+==============
+
 * Which of the parameters are most important for performance?
+	- I am currently going through it in order to try to minimize the parameter space.
+
+* How will we take into account the different network characteristics?
+	- Topologies will have to be incorporated into the state!
+
+* Different operating systems have different parameters for TCP. Should we target a specific implementation?
+
+* All the host tuning tutorials are about tuning High BDP networks. :(
+
+
+
+================
+CLOSED QUESTIONS
+===============
 
 * iperf system - Since we want it to be fast, should I make it compiled rather than scripted?
+	- A script will do for now. The time of iperf, ping is dominating anyway.
 
 * I guess we only care for a datacenter, so MTUs and things that TCP was designed for when it began do not matter.
+	- YES
 
 * What are our metrics? What do we want to optimize in the end?
 	- ANKIT: Mean Flow Completion Time BUT also take into account TPS, latency.
 
 * Time for the sysctls is very small compared to the iperf test time. How should I optimize for performance? Is it worth it to use a compiled C program with libiperf?
-
-* How will we take into account the different network characteristics?
-
-* Target Networks are Datacenters.
+	- Answered before. A simple script will do for now.
 
 * For the tests would it be better to use NS-2 instead of real time tests?
   In general virtualization / simulation methods could be preferable because we have
   to tweak kernel parameters.
 
-
+   -ANKIT: Try both virtualized and non-virtualized methods and compare the relative differences.

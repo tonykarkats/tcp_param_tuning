@@ -48,6 +48,26 @@ Then you try to maximize the sum of the scores
 	Check out the section 4.3 "Benchmark Traffic" for evaluation using well-known traffic    patterns.
 	*****
 
+7. Fasterdata Host Tuning (https://fasterdata.es.net/host-tuning/background/)
+----------------------------------------------------------------------------
+
+	* TCP Buffer Sizing:
+		- If buffer is too small, the TCP congestion window will never fully open up.
+		- If the receive buffer is too large, TCP flow control breaks and the sender can overrun the receiver.
+		  (Note: An overly big send buffer is not a big problem as long as you have excess memory.
+		- Optimal buffer size  = BDP.
+		- ** Changing only the send or the receive buffer size has no effect, as TCP negotiates the buffer size to be the smaller of the two,
+
+	* Sender-side TCP buffer autotuning -> No worry to do the setsockopt() for SENDER.
+	  STILL have to do it for the receiver and adjust the MAX autotuning buffer size. (2.4)
+
+	  From 2.6.7 also receiver side autotuning!
+	  So now admins only have to set the MAX buffer size.
+
+	* EXPERT TIPS: - leave net.tcp_mem alone, as defaults are fine.
+				   - Do not disable tcp_timestamps for high-speed networks.
+                   - For large BDP paths (TCP window > 20MB), SACK can be very slow.
+
 
 
 
