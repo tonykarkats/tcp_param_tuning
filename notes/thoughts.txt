@@ -12,6 +12,19 @@ OPEN QUESTIONS
 
 * All the host tuning tutorials are about tuning High BDP networks. :(
 
+* sender / receiver co-negotiate parameters?
+
+* Should I explore the whole parameter space with the script, or cross out some params that seem irrelevant at first?
+
+* I read the PCC paper where they do something similar. Should I look into the congestion control?
+  I can see that most of the Research is done on Congestion Control..
+ 
+* Every time I have a different TCP congestion algorithm, the set of parameters changes. Should I focus on one only?
+  Since we care about the DC environment only, should I stick only to DCTCP or similar?
+
+* UPDATE from Dukic: Changing TCP parameters on the fly is kind of hard. --> Check PCC.
+					 Also, he mentioned that FCT is an outdated 
+
 
 
 ================
