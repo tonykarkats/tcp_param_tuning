@@ -25,6 +25,14 @@ OPEN QUESTIONS
 * UPDATE from Dukic: Changing TCP parameters on the fly is kind of hard. --> Check PCC.
 					 Also, he mentioned that FCT is an outdated 
 
+* I believe that the network simulator would be a bad idea for our system, since we want to be updating on the fly!!
+
+**NEW** Where will the metrics for our decisions come from? Side-channel measurements or from the live flows themselves? (like PCC)
+	- An idea would be that the agents would periodically probe the network and get the performance metrics.
+
+* ARCHITECTURE: 
+	- Either distributed agents, each takes their own decisions (Cons: Difficult to get global view)
+	- OR: A centralized controller decides based on global metrics and informs the agents on what to change.
 
 
 ================

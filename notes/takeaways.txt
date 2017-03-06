@@ -72,5 +72,9 @@ Then you try to maximize the sum of the scores
 8. PCC: Re-architecting Congestion Control for Consistent High Performance
 -------------------------------------------------------------------------
 
-
+****
+About TCP parameter negotiations:
+	- MSS is NOT negotiated. Each system announces its MSS and the other system abides.
+	- Window Scaling is negotiated (but only the option! not the size)
+	- 
 
