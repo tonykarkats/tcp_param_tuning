@@ -16,7 +16,7 @@ struct metrics {
 	float latency;
 	float throughput;
 	float fct;
-}
+};
 
 
 /* Parameter specific functions */
