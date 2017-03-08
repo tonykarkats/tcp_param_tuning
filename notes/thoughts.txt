@@ -1,34 +1,34 @@
+===================================
+MEETING WITH LAURENT-ANKIT 8/3/2017
+===================================
+
+* Try to do data analysis on Github to find out parameters that sysadmins often set.
+* DO NOT USE Network Simulators. Just use virtualized environments with controlled bandwidth and latency.
+* Categorize parameters as to whether they can change on the fly, their impact on performance and whether they are negotiated between the sender and the receiver.
+  For example, the window is chosen as the minimum window advertised between the sender and the receiver.
+  If one of them has a small fixed window, there is no point in expl
+  Also try to separate the parameters.
+* Take advantage of Host Tuning Tutorials in order to get a good start to our learning algorithm.
+  See if we can beat that with our learning system.
+* Using Docker is of no use, since all containers are going to run on the same Host Network Stack (same Kernel).
+* I should measure the metrics, not only by issuing elephant flows, but also by issuing many small flows.
+* Check out how to set up initial CWND, so that small flows can benefit. (e.g. a 10B flow, with a 10B initial CWND, will finish instantly. With 1B CWN it takes 4RTT's!!)
+
+
+
+
 ==============
 OPEN QUESTIONS
 ==============
-
-* Which of the parameters are most important for performance?
-	- I am currently going through it in order to try to minimize the parameter space.
 
 * How will we take into account the different network characteristics?
 	- Topologies will have to be incorporated into the state!
 
 * Different operating systems have different parameters for TCP. Should we target a specific implementation?
 
-* All the host tuning tutorials are about tuning High BDP networks. :(
-
-* sender / receiver co-negotiate parameters?
-
-* Should I explore the whole parameter space with the script, or cross out some params that seem irrelevant at first?
-
-* I read the PCC paper where they do something similar. Should I look into the congestion control?
-  I can see that most of the Research is done on Congestion Control..
- 
 * Every time I have a different TCP congestion algorithm, the set of parameters changes. Should I focus on one only?
   Since we care about the DC environment only, should I stick only to DCTCP or similar?
 
-* UPDATE from Dukic: Changing TCP parameters on the fly is kind of hard. --> Check PCC.
-					 Also, he mentioned that FCT is an outdated 
-
-* I believe that the network simulator would be a bad idea for our system, since we want to be updating on the fly!!
-
-**NEW** Where will the metrics for our decisions come from? Side-channel measurements or from the live flows themselves? (like PCC)
-	- An idea would be that the agents would periodically probe the network and get the performance metrics.
 
 * ARCHITECTURE: 
 	- Either distributed agents, each takes their own decisions (Cons: Difficult to get global view)
@@ -56,3 +56,14 @@ CLOSED QUESTIONS
   to tweak kernel parameters.
 
    -ANKIT: Try both virtualized and non-virtualized methods and compare the relative differences.
+
+* I believe that the network simulator would be a bad idea for our system, since we want to be updating on the fly!!
+  -Confirmed at meeting.
+
+
+* Where will the metrics for our decisions come from? Side-channel measurements or from the live flows themselves? (like PCC)
+	- An idea would be that the agents would periodically probe the network and get the performance metrics.
+	  ** Confirmed at meeting. Tampering with the existing flows could lead them to low performance-throughput.
+
+* Should I explore the whole parameter space with the script, or cross out some params that seem irrelevant at first?
+	- (Laurent) I SHOULD try to cross out some irrelevant parameters at the beginning.
