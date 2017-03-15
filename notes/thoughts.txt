@@ -34,6 +34,13 @@ OPEN QUESTIONS
 	- Either distributed agents, each takes their own decisions (Cons: Difficult to get global view)
 	- OR: A centralized controller decides based on global metrics and informs the agents on what to change.
 
+* Can iperf really generate representative traffic? How about the ab tool?
+
+* There are some parameters whose impact I cannot check with the simplistic tests I am currently running:
+  e.g. : tcp_fack, tcp_early_retrans, tcp_fin_timeout.
+
+  Most of these parameters require many flows, or other environments (e.g. with many losses).
+
 
 ================
 CLOSED QUESTIONS
