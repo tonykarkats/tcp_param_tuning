@@ -6,13 +6,14 @@ MEETING WITH LAURENT-ANKIT 8/3/2017
 * DO NOT USE Network Simulators. Just use virtualized environments with controlled bandwidth and latency.
 * Categorize parameters as to whether they can change on the fly, their impact on performance and whether they are negotiated between the sender and the receiver.
   For example, the window is chosen as the minimum window advertised between the sender and the receiver.
-  If one of them has a small fixed window, there is no point in expl
+  If one of them has a small fixed window, there is no point in exploring bigger values than this!!
   Also try to separate the parameters.
 * Take advantage of Host Tuning Tutorials in order to get a good start to our learning algorithm.
   See if we can beat that with our learning system.
 * Using Docker is of no use, since all containers are going to run on the same Host Network Stack (same Kernel).
 * I should measure the metrics, not only by issuing elephant flows, but also by issuing many small flows.
 * Check out how to set up initial CWND, so that small flows can benefit. (e.g. a 10B flow, with a 10B initial CWND, will finish instantly. With 1B CWN it takes 4RTT's!!)
+*?* Keep past settings of flows -> TCP already does that!
 
 
 
