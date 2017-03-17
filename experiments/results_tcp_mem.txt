@@ -1,0 +1,32 @@
+# FCT Big = 1 GB file send
+# FCT Small = 20 parallel streams (1 GB in total)
+
+
+# Default Dryad tcp_rmem values on receiver
+Sender tcp_wmem_max(B)		FCT Big(sec)	FCT Small(sec)
+----------------------------------------------------------
+512							13.75			8.5
+1024						13.21			8.5
+2048						13.57			8.5
+4096						11.00			8.5
+8192						11.01			8.5
+16k							11.00			8.5
+32k							8.8				8.5
+64k							8.51			8.5
+128k						8.51			8.5
+256							8.51			8.5		-----> It seems that the Physical Layer has reached its limit!
+
+
+#Default Dryad tcp_wmem values on sender
+Receiver tcp_rmem_max(B)	FCT Big(sec)	FCT Small(sec)
+----------------------------------------------------------
+512							238					
+1024						Too many retransmissions
+2048						Too many retransmissions
+4096					    44.31	
+8192						32.44
+16k							20.73
+32k							15.91
+64k							9.9
+128k						8.51
+256							8.51		-----> It seems that the Physical Layer has reached its limit!
