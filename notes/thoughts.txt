@@ -1,4 +1,18 @@
 ===================================
+MEETING WITH LAURENT-ANKIT 15/3/2017
+===================================
+
+* Compiled list was ok. Laurent proposed to add another column "cause".
+* Ankit: Calculate "energy" needed to change parameters. (CPU etc.)
+* Check out TCP pacing and TOE.
+* Laurent: Per-packet load balancing.
+* Have to present more concrete measurements.
+* Laurent: Check out: reno, newreno, vegas, dctcp for more parameters.
+* I have to quantify bare-metal vs VM *relevant* performance.
+
+
+
+===================================
 MEETING WITH LAURENT-ANKIT 8/3/2017
 ===================================
 
@@ -31,7 +45,7 @@ OPEN QUESTIONS
   Since we care about the DC environment only, should I stick only to DCTCP or similar?
 
 
-* ARCHITECTURE: 
+* ARCHITECTURE:
 	- Either distributed agents, each takes their own decisions (Cons: Difficult to get global view)
 	- OR: A centralized controller decides based on global metrics and informs the agents on what to change.
 

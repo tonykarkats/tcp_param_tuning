@@ -1,0 +1,17 @@
+|===|
+|LOG|
+|===|
+
+16/3
+----
+* Carried out tests on sender and receiver buffer.
+  Did not find out any difference when using parallel streams.
+  Of course the maximum sender/receiver window throttles the overall bandwidth.
+
+* Laurent's different TCP implementations that may introduce new parameters.
+  - TCP Vegas (for high BDP networks) : NO new parameters introduced.
+  - TCP Reno     (Not available on Dryad!)
+  - TCP NewReno  (Not available on Dryad!)
+  - DCTCP        (Not available on Dryad!)
+
+* PROBLEM: Since we are in a LAN, we will see no queueing. Packets will be delivered immediately.
