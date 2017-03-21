@@ -61,24 +61,26 @@ int main(int argc, char *argv[])
 
 	char *param_value;
 	get_param("tcp_mem", &param_value);
-	printf("V = %s", param_value);
+	printf("tcp_mem = %s", param_value);
+
+	char *fack_value;
+	get_param("tcp_fack", &fack_value);
+	printf("tcp_fack = %s", fack_value);
 
 
 	return 0;
 }
 
-
 /*
  * Set the parameter @name to the value @value using sysctl.
  */
-
 error_t set_param(const char *name,  const char *value)
 {
 
 	//XXX: Faster if I write to /proc ? --> Check!
 	char command[256];
 	snprintf(command, sizeof(command), "/sbin/sysctl -w net.ipv4.%s=%s", name, value);
-	//printf("%s\n", command);
+	printf("SET COMMAND = %s\n", command);
 
 	if (system(command) != 0) {
 		return E_INVALID_PARAM;	
@@ -90,12 +92,11 @@ error_t set_param(const char *name,  const char *value)
 /*
  * Return the value of the parameter @name into @ret_value.
  */
-
 error_t get_param(const char *name, char **ret_value)
 {
 	char command[256];
 	snprintf(command, sizeof(command), "/sbin/sysctl net.ipv4.%s", name);
-	printf("COMMAND = %s\n", command);
+	printf("GET COMMAND = %s\n", command);
 
 	FILE *fp = popen(command, "r");
 	if (fp == NULL) {
@@ -108,14 +109,9 @@ error_t get_param(const char *name, char **ret_value)
 	if (fgets(output, 128, fp) != NULL) {
 		strtok(output, "=");
 		*ret_value = strtok(NULL, "=");
-		//printf("%s\n", last_token);
 	}
 
-	//strcpy(*ret_value, last_token);
-	//printf("VVV : %s\n", ret_value);
 	pclose(fp);
 
 	return E_SUCCESS;
 }
-
-
