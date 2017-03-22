@@ -30,3 +30,19 @@ Receiver tcp_rmem_max(B)	FCT Big(sec)	FCT Small(sec)
 64k							9.9
 128k						8.51
 256							8.51		-----> It seems that the Physical Layer has reached its limit!
+
+
+# Default Azure tcp_rmem values on receiver
+Sender tcp_wmem_max(B)		FCT Big(sec)	FCT Small(sec)
+----------------------------------------------------------
+512							52.81			10.76
+1024						44.57			10.79
+2048						63.24 ?			10.88
+4096						38.27			-||-
+8192						38.11			-||-
+16k							38.55			-||-
+32k							38.81			-||-
+64k							20.74			-||-
+128k						15.11			-||-
+256							10.68			-||-		-----> It seems that the Physical Layer has reached its limit!
+512							10.85			-||-	
