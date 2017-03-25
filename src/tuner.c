@@ -23,41 +23,15 @@
 
 int main(int argc, char *argv[])
 {
+	struct metrics *ret_metrics;
+	error_t err;
+	if (err=execute_test("dryad02", 10000000, &ret_metrics) < 0) {
+		printf("Error executing test");
+	}
 
-	/* TODO :  Read default parameters from file */
+	printf("Flow of %d bytes completed in %.3f microseconds\n", 10000000, ret_metrics->fct);
 
 	/* Perform a test and get back the metrics */
-	struct iperf_test *test;
-	struct timeval start, end;
-
-	test = iperf_new_test();
-	if (!test) {
-		iperf_errexit(NULL, "Error while creating new test - %s", iperf_strerror(i_errno));
-	}
-	// TODO: Change the defaults to settings of my choosing
-	iperf_defaults(test);
-	test->stats_interval = 5;
-	test->reporter_interval = 5;
-	test->duration = 0;
-	test->settings->bytes = 100000000000;
-
-	// Test one receive
-	iperf_parse_arguments(test, argc, argv);
-
-	/* Set new parameters accordingly */
-	/*TODO : Put everything in a while loop!! */
-	gettimeofday(&start, NULL);
-	iperf_run_client(test);
-	gettimeofday(&end, NULL);
-	
-	//TODO: More accuracy here!
-	printf("Flow of %d bytes completed in %ld sec\n", test->settings->bytes, (end.tv_sec - start.tv_sec));
-	
-	error_t err;
-	err = set_param("tcp_rmem", "\"4096 87380 6291456\"");
-	if (err != 0 ) {
-		print_error(err);
-	}
 
 	char *param_value;
 	get_param("tcp_mem", &param_value);
@@ -71,8 +45,15 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+
+void print_error(error_t error) {
+	printf("Error: %s\n", error_desc[error]);
+}
+
 /*
  * Set the parameter @name to the value @value using sysctl.
+ * Only TCP parameters are taken into account, so net.ipv4. is appended to the 
+ * parameter name for sysctl.
  */
 error_t set_param(const char *name,  const char *value)
 {
@@ -118,19 +99,22 @@ error_t get_param(const char *name, char **ret_value)
 
 /* Executes an iperf test of flow size @flow_size to the specified host */
 
-error_t execute_test(char *server_hostname, int flow_size, struct *ret_metrics) {
+error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_metrics)
+{
 	struct iperf_test *test;
 	struct timeval start, end;
 
-	if (!new_iperf_test()) {
+	test = iperf_new_test();
+	if (!test) {
 		return E_IPERF_TEST;	
 	}
 
-	iperf_defaults_test();
-	
 	/* Test settings */
 	iperf_defaults(test);
-	test->iperf_server_hostname = server_hostname;
+	iperf_set_test_role(test, 'c');
+	test->stats_interval = 0;
+	test->reporter_interval = 0;
+	test->server_hostname = server_hostname;
 	test->duration = 0;
 	test->settings->bytes = flow_size;
 
@@ -140,13 +124,12 @@ error_t execute_test(char *server_hostname, int flow_size, struct *ret_metrics) 
 		return E_IPERF_TEST;
 	}
 	(void) gettimeofday(&end, NULL);
-	
+
 	/* Report results */
-	ret_metrics = (struct metrics *) malloc(sizeof(struct metrics));
-	ret_metrics->fct = ((end.tv_sec * 1000000 + end.tv_usec)
+	*ret_metrics = (struct metrics *) malloc(sizeof(struct metrics));
+	(*ret_metrics)->fct = ((end.tv_sec * 1000000 + end.tv_usec)
                        - (start.tv_sec * 1000000 + start.tv_usec));
 
 	return E_SUCCESS;
-
-
 }
+

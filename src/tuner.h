@@ -18,5 +18,5 @@ error_t get_param(const char *param, char **ret_value);
 
 
 /* Test specific functions */
-struct metrics * execute_test(char *iperf_test);
+error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_metrics);
 
