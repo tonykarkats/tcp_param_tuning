@@ -115,3 +115,38 @@ error_t get_param(const char *name, char **ret_value)
 
 	return E_SUCCESS;
 }
+
+/* Executes an iperf test of flow size @flow_size to the specified host */
+
+error_t execute_test(char *server_hostname, int flow_size, struct *ret_metrics) {
+	struct iperf_test *test;
+	struct timeval start, end;
+
+	if (!new_iperf_test()) {
+		return E_IPERF_TEST;	
+	}
+
+	iperf_defaults_test();
+	
+	/* Test settings */
+	iperf_defaults(test);
+	test->iperf_server_hostname = server_hostname;
+	test->duration = 0;
+	test->settings->bytes = flow_size;
+
+	/* Run the test */
+	(void) gettimeofday(&start, NULL);
+	if (iperf_run_client(test) < 0) {
+		return E_IPERF_TEST;
+	}
+	(void) gettimeofday(&end, NULL);
+	
+	/* Report results */
+	ret_metrics = (struct metrics *) malloc(sizeof(struct metrics));
+	ret_metrics->fct = ((end.tv_sec * 1000000 + end.tv_usec)
+                       - (start.tv_sec * 1000000 + start.tv_usec));
+
+	return E_SUCCESS;
+
+
+}
