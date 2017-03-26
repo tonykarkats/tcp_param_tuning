@@ -1,8 +1,0 @@
-# In this experiment we tested the effect of enabling TCP SACK.
-
-						Big Flow(sec)		Many small Flows(sec)
-
-tcp_sack = 0			8.48				7.93
-tcp_sack = 1			8.49				7.94
-
-** We cannot see the effect of TCP SACK, since we have no retransmissions!!

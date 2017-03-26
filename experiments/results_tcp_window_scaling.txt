@@ -1,7 +1,0 @@
-# In this experiment we tested the effect of disabling window scaling
-# For the experiment we kept the default dryad parameters and only changed the TCP window scaling option.
-
-						Big Flow(sec)		Many small Flows(sec)
-
-tcp_window_scaling = 0		8.51				8.46
-tcp_window_scaling = 1		8.48				7.98

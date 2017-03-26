@@ -1,9 +1,0 @@
-This folder contains experiments carried out in order to find the importance of
-certain TCP parameters.
-
-The setup of the experiments includes:
-* dryad01 and dryad02 from the dryad cluster
-  --> https://wiki.systems.ethz.ch/dryad_cluster
-
-
-
