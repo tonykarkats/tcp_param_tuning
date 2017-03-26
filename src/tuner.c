@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <linux/sysctl.h>
@@ -21,28 +22,60 @@
 #include "tuner.h"
 
 
-int main(int argc, char *argv[])
-{
-	struct metrics *ret_metrics;
-	error_t err;
-	if (err=execute_test("dryad02", 10000000, &ret_metrics) < 0) {
-		printf("Error executing test");
+void tcp_timestamps() {
+
+	int flowsize[] = {10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+	FILE *fp = fopen("tcp_timestamps.out", "w");
+
+	int tcp_timestamps;
+	for (tcp_timestamps=0; tcp_timestamps<2; tcp_timestamps++) {
+		int i;
+		for (i=0; i<sizeof(flowsize)/sizeof(flowsize[0]); i++) {
+			struct metrics *ret_metrics;
+			error_t err;
+			char param_value[2];
+			sprintf(param_value, "%d", tcp_timestamps);
+			set_param("tcp_timestamps", param_value);
+			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
+				printf("Error executing test");
+			}
+			fprintf(fp, "%d %d %ld\n",tcp_timestamps, flowsize[i], ret_metrics->fct);
+		}
+		fprintf(fp, "\n");
 	}
+	fclose(fp);
+}	
 
-	printf("Flow of %d bytes completed in %.3f microseconds\n", 10000000, ret_metrics->fct);
+void tcp_mem_experiments() {
+	
+	// Testing impact of tcp_wmem value
+	int start = 1024;
+	int end = start * 100;
+	int stride = 1024;
+	int wmem;
+	int flowsize[] = {10000, 100000, 1000000, 10000000, 100000000};
+	FILE *fp = fopen("tcp_mem.out", "w");
 
-	/* Perform a test and get back the metrics */
+	int i=0;
+	for (i=0; i<sizeof(flowsize)/sizeof(flowsize[0]); i++) {
+		for (wmem = start; wmem < end; wmem += stride) {
+			struct metrics *ret_metrics;
+			error_t err;
+			char param_value[50];
+			sprintf(param_value, "1024 %d %d", wmem, wmem);
+			printf("%s", param_value);
+			set_param("tcp_wmem", param_value);
+			printf("Running test for flow_size = %d and wmem = %d\n", flowsize[i], wmem);
+			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
+				printf("Error executing test");
+			}
+			size_t written = fprintf(fp, "%d %d %ld\n", flowsize[i], wmem, ret_metrics->fct);
 
-	char *param_value;
-	get_param("tcp_mem", &param_value);
-	printf("tcp_mem = %s", param_value);
+		}
+		fprintf(fp, "\n");	
+	}
+	fclose(fp);
 
-	char *fack_value;
-	get_param("tcp_fack", &fack_value);
-	printf("tcp_fack = %s", fack_value);
-
-
-	return 0;
 }
 
 
@@ -60,7 +93,11 @@ error_t set_param(const char *name,  const char *value)
 
 	//XXX: Faster if I write to /proc ? --> Check!
 	char command[256];
-	snprintf(command, sizeof(command), "/sbin/sysctl -w net.ipv4.%s=%s", name, value);
+	if (strstr(value, " "))
+		snprintf(command, sizeof(command), "/sbin/sysctl -w net.ipv4.%s=\"%s\"", name, value);
+	else
+		snprintf(command, sizeof(command), "/sbin/sysctl -w net.ipv4.%s=%s", name, value);
+
 	printf("SET COMMAND = %s\n", command);
 
 	if (system(command) != 0) {
@@ -129,7 +166,28 @@ error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_
 	*ret_metrics = (struct metrics *) malloc(sizeof(struct metrics));
 	(*ret_metrics)->fct = ((end.tv_sec * 1000000 + end.tv_usec)
                        - (start.tv_sec * 1000000 + start.tv_usec));
-
+	//TODO: Also add throughput and size sent
+	iperf_reset_test(test);
 	return E_SUCCESS;
 }
 
+int main(int argc, char *argv[])
+{
+
+	//tcp_mem_experiments();
+	//tcp_timestamps();
+	set_param("tcp_timestamps", "1");
+//	struct metrics *ret_metrics;
+//	error_t err;
+//	if (err=execute_test("dryad02", 10000000, &ret_metrics) < 0) {
+//		printf("Error executing test");
+//	}
+//	printf("Flow of %d bytes completed in %.3f microseconds\n", 10000000, ret_metrics->fct);
+//
+//	/* Perform a test and get back the metrics */
+//	char *param_value;
+//	get_param("tcp_mem", &param_value);
+//	printf("tcp_mem = %s", param_value);
+
+	return 0;
+}
