@@ -25,7 +25,7 @@
 void perform_experiment(const char *param, int start, int end, int stride)
 {
 
-	int flowsize[] = {10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+	int flowsize[] = {10000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000};
 	char filename[256];
 	strcpy(filename, param);
 	printf("%s\n", filename);
@@ -61,7 +61,7 @@ void tcp_mem_experiments() {
 	int end = start * 100;
 	int stride = 1024;
 	int wmem;
-	int flowsize[] = {10000, 100000, 1000000, 10000000, 100000000};
+	int flowsize[] = {10000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000};
 	FILE *fp = fopen("tcp_mem.out", "w");
 
 	int i=0;
@@ -183,21 +183,11 @@ int main(int argc, char *argv[])
 {
 
 	//tcp_mem_experiments();
-	//tcp_timestamps();
-	//tcp_sack();
-	//tcp_no_metrics_save();
-	perform_experiment("tcp_no_metrics_save", 0, 1, 1);
-//	struct metrics *ret_metrics;
-//	error_t err;
-//	if (err=execute_test("dryad02", 10000000, &ret_metrics) < 0) {
-//		printf("Error executing test");
-//	}
-//	printf("Flow of %d bytes completed in %.3f microseconds\n", 10000000, ret_metrics->fct);
-//
-//	/* Perform a test and get back the metrics */
-//	char *param_value;
-//	get_param("tcp_mem", &param_value);
-//	printf("tcp_mem = %s", param_value);
+	//perform_experiment("tcp_no_metrics_save", 0, 1, 1);
+	//perform_experiment("tcp_window_scaling", 0, 1, 1);
+	//perform_experiment("tcp_sack", 0, 1, 1);
+	perform_experiment("tcp_timestamps", 0, 1, 1);
+
 
 	return 0;
 }
