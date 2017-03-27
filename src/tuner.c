@@ -22,77 +22,37 @@
 #include "tuner.h"
 
 
-void tcp_no_metrics_save() {
-	int flowsize[] = {10000, 100000, 1000000, 10000000, 100000000, 1000000000};
-	FILE *fp = fopen("tcp_no_metrics_save.out", "w");
-	int tcp_nms;
+void perform_experiment(const char *param, int start, int end, int stride)
+{
 
-	for (tcp_nms=0; tcp_nms<2; tcp_nms++) {
+	int flowsize[] = {10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+	char filename[256];
+	strcpy(filename, param);
+	printf("%s\n", filename);
+	FILE *fp = fopen(strcat(filename, ".out"), "w");
+	int param_value;
+	printf("WE COOL BRO!\n");
+
+	for (param_value=start; param_value <= end; param_value += stride) {
 		int i;
 		for (i=0; i<sizeof(flowsize)/sizeof(flowsize[0]); i++) {
 			struct metrics *ret_metrics;
 			error_t err;
-			char param_value[2];
-			sprintf(param_value, "%d", tcp_nms);
-			set_param("tcp_no_metrics_save", param_value);
+			char param_val[20];
+			sprintf(param_val, "%d", param_value);
+			printf("%s\n", param_val);
+			set_param(param, param_val);
 			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
 				printf("Error executing test");
 			}
-			fprintf(fp, "%d %d %ld\n", flowsize[i], tcp_nms, ret_metrics->fct);
+			fprintf(fp, "%d %d %ld\n", flowsize[i], param_value, ret_metrics->fct);
 		}
 		fprintf(fp, "\n");
 	}
 	fclose(fp);
+
 
 }
-
-void tcp_sack() {
-	int flowsize[] = {10000, 100000, 1000000, 10000000, 100000000, 1000000000};
-
-	FILE *fp = fopen("tcp_sack.out", "w");
-
-	int tcp_sack;
-	for (tcp_sack=0; tcp_sack<2; tcp_sack++) {
-		int i;
-		for (i=0; i<sizeof(flowsize)/sizeof(flowsize[0]); i++) {
-			struct metrics *ret_metrics;
-			error_t err;
-			char param_value[2];
-			sprintf(param_value, "%d", tcp_sack);
-			set_param("tcp_sack", param_value);
-			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
-				printf("Error executing test");
-			}
-			fprintf(fp, "%d %d %ld\n",flowsize[i], tcp_sack, ret_metrics->fct);
-		}
-		fprintf(fp, "\n");
-	}
-	fclose(fp);
-}
-
-void tcp_timestamps() {
-
-	int flowsize[] = {10000, 100000, 1000000, 10000000, 100000000, 1000000000};
-	FILE *fp = fopen("tcp_timestamps.out", "w");
-
-	int tcp_timestamps;
-	for (tcp_timestamps=0; tcp_timestamps<2; tcp_timestamps++) {
-		int i;
-		for (i=0; i<sizeof(flowsize)/sizeof(flowsize[0]); i++) {
-			struct metrics *ret_metrics;
-			error_t err;
-			char param_value[2];
-			sprintf(param_value, "%d", tcp_timestamps);
-			set_param("tcp_timestamps", param_value);
-			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
-				printf("Error executing test");
-			}
-			fprintf(fp, "%d %d %ld\n", flowsize[i], tcp_timestamps, ret_metrics->fct);
-		}
-		fprintf(fp, "\n");
-	}
-	fclose(fp);
-}	
 
 void tcp_mem_experiments() {
 	
@@ -225,7 +185,8 @@ int main(int argc, char *argv[])
 	//tcp_mem_experiments();
 	//tcp_timestamps();
 	//tcp_sack();
-	tcp_no_metrics_save();
+	//tcp_no_metrics_save();
+	perform_experiment("tcp_no_metrics_save", 0, 1, 1);
 //	struct metrics *ret_metrics;
 //	error_t err;
 //	if (err=execute_test("dryad02", 10000000, &ret_metrics) < 0) {
