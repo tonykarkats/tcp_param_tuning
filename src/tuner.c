@@ -38,7 +38,7 @@ void tcp_no_metrics_save() {
 			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
 				printf("Error executing test");
 			}
-			fprintf(fp, "%d %d %ld\n",tcp_nms, flowsize[i], ret_metrics->fct);
+			fprintf(fp, "%d %d %ld\n", flowsize[i], tcp_nms, ret_metrics->fct);
 		}
 		fprintf(fp, "\n");
 	}
@@ -63,7 +63,7 @@ void tcp_sack() {
 			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
 				printf("Error executing test");
 			}
-			fprintf(fp, "%d %d %ld\n",tcp_sack, flowsize[i], ret_metrics->fct);
+			fprintf(fp, "%d %d %ld\n",flowsize[i], tcp_sack, ret_metrics->fct);
 		}
 		fprintf(fp, "\n");
 	}
@@ -87,7 +87,7 @@ void tcp_timestamps() {
 			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
 				printf("Error executing test");
 			}
-			fprintf(fp, "%d %d %ld\n",tcp_timestamps, flowsize[i], ret_metrics->fct);
+			fprintf(fp, "%d %d %ld\n", flowsize[i], tcp_timestamps, ret_metrics->fct);
 		}
 		fprintf(fp, "\n");
 	}
