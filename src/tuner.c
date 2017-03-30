@@ -22,36 +22,48 @@
 #include "tuner.h"
 
 
-void perform_experiment(const char *param, int start, int end, int stride)
+void perform_experiment(const char *server_name, const char *param, int pstart, int pend, int pstride,
+						int fstart, int fend, int fstride)
 {
-
-	int flowsize[] = {10000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000};
+	//int flowsize[] = {10000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000};
 	char filename[256];
 	strcpy(filename, param);
 	printf("%s\n", filename);
 	FILE *fp = fopen(strcat(filename, ".out"), "w");
 	int param_value;
-	printf("WE COOL BRO!\n");
+	fprintf(fp, "Experiment\n--------------------------------------------\nParameter = %s\nValues [%d, %d] with stride %d\n"
+				 "Flow sizes = [%d, %d] with stride %d\n--------------------------------------------\n",
+			param, pstart, pend, pstride, fstart, fend, fstride);
+	
+	/* Get initial value of parameter so as to reset it in the end */
+	char * init_value;
+	get_param(param, &init_value);
+	char init_value_2[10];
+	strcpy(init_value_2, init_value);
+	printf("Initial param value = %s\n", init_value_2);
 
-	for (param_value=start; param_value <= end; param_value += stride) {
-		int i;
-		for (i=0; i<sizeof(flowsize)/sizeof(flowsize[0]); i++) {
+	for (param_value = pstart; param_value <= pend; param_value += pstride) {
+		int fsize;
+		//for (i=0; i<sizeof(flowsize)/sizeof(flowsize[0]); i++) {
+		for (fsize = fstart; fsize <= fend; fsize += fstride) {
 			struct metrics *ret_metrics;
 			error_t err;
 			char param_val[20];
 			sprintf(param_val, "%d", param_value);
-			printf("%s\n", param_val);
+			//printf("%s\n", param_val);
 			set_param(param, param_val);
-			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
+			if (err=execute_test(server_name, fsize, &ret_metrics) < 0) {
 				printf("Error executing test");
 			}
-			fprintf(fp, "%d %d %ld\n", flowsize[i], param_value, ret_metrics->fct);
+			fprintf(fp, "%d %d %ld\n", fsize, param_value, ret_metrics->fct);
 		}
 		fprintf(fp, "\n");
 	}
 	fclose(fp);
 
-
+	printf("Initial param value = %s\n", init_value_2);
+	printf("Resetting parameter value to %s\n", init_value_2);
+	set_param(param, init_value_2);
 }
 
 void tcp_mem_experiments() {
@@ -106,7 +118,7 @@ error_t set_param(const char *name,  const char *value)
 	else
 		snprintf(command, sizeof(command), "/sbin/sysctl -w net.ipv4.%s=%s", name, value);
 
-	printf("SET COMMAND = %s\n", command);
+	//printf("SET COMMAND = %s\n", command);
 
 	if (system(command) != 0) {
 		return E_INVALID_PARAM;	
@@ -182,12 +194,38 @@ error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_
 int main(int argc, char *argv[])
 {
 
-	//tcp_mem_experiments();
-	//perform_experiment("tcp_no_metrics_save", 0, 1, 1);
-	//perform_experiment("tcp_window_scaling", 0, 1, 1);
-	//perform_experiment("tcp_sack", 0, 1, 1);
-	perform_experiment("tcp_timestamps", 0, 1, 1);
+	/* All TCP experiments for */
 
+	//tcp_mem_experiments();
+	perform_experiment("dryad02", "tcp_timestamps", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_autocorking", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_adv_win_scale", 0, 5, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_app_win", 28, 31, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_abort_on_overflow", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_window_scaling", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_sack", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_dsack", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_syn_retries", 1, 10, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_retries1", 1, 10, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_retries2", 1, 10, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_syncookies", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_tw_recycle", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_fack", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_reordering", 0, 10, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_ecn", 0, 2, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_tw_reuse", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_frto", 0, 2, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_frto_response", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_no_metrics_save", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_low_latency", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_early_retrans", 0, 4, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_base_mss", 256, 2048, 256, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, 10000, 100000, 10000);
+	perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, 10000, 100000, 10000);
+	//perform_experiment("dryad02", "tcp_rmem", 1024, 10000, 1024, 10000, 100000, 10000);
+	
 
 	return 0;
 }
