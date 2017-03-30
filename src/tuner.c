@@ -48,8 +48,12 @@ void perform_experiment(const char *server_name, const char *param, int pstart, 
 		for (fsize = fstart; fsize <= fend; fsize += fstride) {
 			struct metrics *ret_metrics;
 			error_t err;
-			char param_val[20];
-			sprintf(param_val, "%d", param_value);
+			char param_val[30];
+			if (strcmp(param, "tcp_rmem") && strcmp(param, "tcp_wmem")){
+				sprintf(param_val, "%d", param_value);
+			}
+			else
+				sprintf(param_val, "4096 %d %d", param_value, param_value);
 
 			if (set_param(param, param_val) < 0) {
 				fprintf(fp, "Parameter %s either does not exist or was not set correctly!!\n", param);
@@ -67,38 +71,6 @@ void perform_experiment(const char *server_name, const char *param, int pstart, 
 	printf("Initial param value = %s\n", init_value_2);
 	printf("Resetting parameter value to %s\n", init_value_2);
 	set_param(param, init_value_2);
-}
-
-void tcp_mem_experiments() {
-	
-	// Testing impact of tcp_wmem value
-	int start = 1024;
-	int end = start * 100;
-	int stride = 1024;
-	int wmem;
-	int flowsize[] = {10000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000};
-	FILE *fp = fopen("tcp_mem.out", "w");
-
-	int i=0;
-	for (i=0; i<sizeof(flowsize)/sizeof(flowsize[0]); i++) {
-		for (wmem = start; wmem < end; wmem += stride) {
-			struct metrics *ret_metrics;
-			error_t err;
-			char param_value[50];
-			sprintf(param_value, "1024 %d %d", wmem, wmem);
-			printf("%s", param_value);
-			set_param("tcp_wmem", param_value);
-			printf("Running test for flow_size = %d and wmem = %d\n", flowsize[i], wmem);
-			if (err=execute_test("dryad02", flowsize[i], &ret_metrics) < 0) {
-				printf("Error executing test");
-			}
-			size_t written = fprintf(fp, "%d %d %ld\n", flowsize[i], wmem, ret_metrics->fct);
-
-		}
-		fprintf(fp, "\n");	
-	}
-	fclose(fp);
-
 }
 
 
@@ -196,6 +168,8 @@ error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_
 
 void run_all_experiments(int fstart, int fend, int fstride) {
 
+
+	perform_experiment("dryad02", "tcp_rmem", 4096, 65536, 4096, fstart, fend, fstride);
 	perform_experiment("dryad02", "tcp_timestamps", 0, 1, 1, fstart, fend, fstride);
 	perform_experiment("dryad02", "tcp_autocorking", 0, 1, 1, fstart, fend, fstride);
 	perform_experiment("dryad02", "tcp_adv_win_scale", 0, 5, 1, fstart, fend, fstride);
@@ -230,13 +204,7 @@ void run_all_experiments(int fstart, int fend, int fstride) {
 
 int main(int argc, char *argv[])
 {
-
 	/* All TCP experiments for */
 	run_all_experiments(10000, 100000, 10000);
-
-	//tcp_mem_experiments();
-	//perform_experiment("dryad02", "tcp_rmem", 1024, 10000, 1024, fstart, fend, fstride);
-	
-
 	return 0;
 }
