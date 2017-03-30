@@ -37,7 +37,7 @@ def plot_integer(parameter):
     plt.grid(True)
     plt.show()
 
-def plot_boolean(parameter):
+def plot_flow_xaxis(parameter):
     results_file="{}.out".format(parameter)
     fct = {}
     
@@ -56,11 +56,11 @@ def plot_boolean(parameter):
         fct_values = []
         for (flowsize, fct_value) in fct[option]:
             fct_values.append(fct_value)
-            flowsizes.append(flowsize)
+            flowsizes.append(flowsize/1000)
         plt.plot(flowsizes, fct_values, label="{}={}".format(parameter, option))
     
     # Labels
-    plt.xlabel('Flow size (Bytes)')
+    plt.xlabel('Flow size (KB)')
     plt.ylabel('FCT (msec)')
     plt.title("Flow completion time for {} settings".format(parameter))
     
@@ -71,7 +71,30 @@ def plot_boolean(parameter):
     plt.grid(True)
     plt.show()
 
-plot_integer("tcp_rmem")
-plot_boolean("tcp_timestamps")
-plot_boolean("tcp_no_metrics_save")
-plot_boolean("tcp_sack")
+#plot_integer("tcp_rmem")
+plot_flow_xaxis("tcp_timestamps")
+plot_flow_xaxis("tcp_window_scaling")
+plot_flow_xaxis("tcp_sack")
+plot_flow_xaxis("tcp_dsack")
+plot_flow_xaxis("tcp_syn_retries")
+plot_flow_xaxis("tcp_retries1")
+plot_flow_xaxis("tcp_retries2")
+plot_flow_xaxis("tcp_syncookies")
+plot_flow_xaxis("tcp_tw_recycle")
+plot_flow_xaxis("tcp_fack")
+plot_flow_xaxis("tcp_reordering")
+plot_flow_xaxis("tcp_ecn")
+plot_flow_xaxis("tcp_tw_reuse")
+plot_flow_xaxis("tcp_slow_start_after_idle")
+plot_flow_xaxis("tcp_frto")
+plot_flow_xaxis("tcp_frto_response")
+plot_flow_xaxis("tcp_no_metrics_save")
+plot_flow_xaxis("tcp_low_latency")
+plot_flow_xaxis("tcp_mtu_probing")
+plot_flow_xaxis("tcp_slow_start_after_idle")
+plot_flow_xaxis("tcp_adv_win_scale")
+plot_flow_xaxis("tcp_app_win")
+plot_flow_xaxis("tcp_autocorking")
+plot_flow_xaxis("tcp_base_mss")
+plot_flow_xaxis("tcp_early_retrans")
+
