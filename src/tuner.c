@@ -50,8 +50,11 @@ void perform_experiment(const char *server_name, const char *param, int pstart, 
 			error_t err;
 			char param_val[20];
 			sprintf(param_val, "%d", param_value);
-			//printf("%s\n", param_val);
-			set_param(param, param_val);
+
+			if (set_param(param, param_val) < 0) {
+				fprintf(fp, "Parameter %s either does not exist or was not set correctly!!\n", param);
+				return;
+			};
 			if (err=execute_test(server_name, fsize, &ret_metrics) < 0) {
 				printf("Error executing test");
 			}
@@ -191,40 +194,48 @@ error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_
 	return E_SUCCESS;
 }
 
+void run_all_experiments(int fstart, int fend, int fstride) {
+
+	perform_experiment("dryad02", "tcp_timestamps", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_autocorking", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_adv_win_scale", 0, 5, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_app_win", 28, 31, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_abort_on_overflow", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_window_scaling", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_sack", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_dsack", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_syn_retries", 1, 10, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_retries1", 1, 10, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_retries2", 1, 10, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_syncookies", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_tw_recycle", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_fack", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_reordering", 0, 10, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_ecn", 0, 2, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_tw_reuse", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_frto", 0, 2, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_frto_response", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_no_metrics_save", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_low_latency", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_early_retrans", 0, 4, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_base_mss", 256, 2048, 256, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, fstart, fend, fstride);
+	perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, fstart, fend, fstride);
+
+}
+
+
+
 int main(int argc, char *argv[])
 {
 
 	/* All TCP experiments for */
+	run_all_experiments(10000, 100000, 10000);
 
 	//tcp_mem_experiments();
-	perform_experiment("dryad02", "tcp_timestamps", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_autocorking", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_adv_win_scale", 0, 5, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_app_win", 28, 31, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_abort_on_overflow", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_window_scaling", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_sack", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_dsack", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_syn_retries", 1, 10, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_retries1", 1, 10, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_retries2", 1, 10, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_syncookies", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_tw_recycle", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_fack", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_reordering", 0, 10, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_ecn", 0, 2, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_tw_reuse", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_frto", 0, 2, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_frto_response", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_no_metrics_save", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_low_latency", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_early_retrans", 0, 4, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_base_mss", 256, 2048, 256, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, 10000, 100000, 10000);
-	perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, 10000, 100000, 10000);
-	//perform_experiment("dryad02", "tcp_rmem", 1024, 10000, 1024, 10000, 100000, 10000);
+	//perform_experiment("dryad02", "tcp_rmem", 1024, 10000, 1024, fstart, fend, fstride);
 	
 
 	return 0;
