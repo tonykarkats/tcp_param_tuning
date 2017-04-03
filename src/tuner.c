@@ -14,6 +14,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <netinet/tcp.h>
+#include <time.h>
 
 #include "iperf_api.h"
 #include "iperf.h"
@@ -21,6 +22,45 @@
 
 #include "tuner.h"
 
+
+int get_mem_load() {
+	FILE *fp;
+	int mem_total, mem_free;
+
+	fp = fopen("/proc/meminfo", "r");
+	if (!fp)
+		return -1;
+
+	char line[1024];
+	int line_nr = 0;
+	
+	for (line_nr = 0; line_nr < 2; line_nr++) {
+		fgets(line, sizeof(line), fp);
+		char *token = strtok(line, " \t");
+		token = strtok(NULL, " \t");
+		if (line_nr == 0)
+			mem_total = atoi(token);
+		else
+			mem_free = atoi(token);
+	}
+	
+	float mem_load = 1 - (float)mem_free / mem_total;
+	return (int) (round(mem_load * 100.0));
+
+}
+
+int get_cpu_load() {
+	FILE *fp = NULL;
+	float load_now, load_five_min;;
+
+	fp = fopen("/proc/loadavg", "r");
+	if (!fp)
+		return -1;
+	fscanf(fp, "%f %f", &load_now, &load_five_min);
+	fclose(fp);
+
+	return (int)(load_now * 100);
+}
 
 void perform_experiment(const char *server_name, const char *param, int pstart, int pend, int pstride,
 						int fstart, int fend, int fstride)
@@ -165,12 +205,9 @@ error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_
 	*ret_metrics = (struct metrics *) malloc(sizeof(struct metrics));
 	(*ret_metrics)->fct = ((end.tv_sec * 1000000 + end.tv_usec)
                        - (start.tv_sec * 1000000 + start.tv_usec));
-	int i=0;
-	for (i=0; i<3; i++) {
-		(*ret_metrics)->cpu_util[i] = test->cpu_util[i];
-		//printf("%lf ", test->cpu_util[i]);
-	}
-	printf("\n");
+	(*ret_metrics)->cpu_load = get_cpu_load();
+	(*ret_metrics)->mem_load = get_mem_load();
+
 	//TODO: Also add throughput and size sent
 	iperf_reset_test(test);
 	return E_SUCCESS;

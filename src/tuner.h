@@ -8,8 +8,9 @@
 struct metrics {
 	float latency;
 	float throughput;
-	long fct;
-	double cpu_util[3]; // CPU Utilization - total, user, system
+	long fct;           // Average Flow Completion Time of the experiment.
+	int cpu_load;		// Average CPU load over the last 5 minutes.
+    int mem_load;		// Percentage of free host memory.
 };
 
 /* Parameter specific functions */
