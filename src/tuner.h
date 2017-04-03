@@ -9,6 +9,7 @@ struct metrics {
 	float latency;
 	float throughput;
 	long fct;
+	double cpu_util[3]; // CPU Utilization - total, user, system
 };
 
 /* Parameter specific functions */

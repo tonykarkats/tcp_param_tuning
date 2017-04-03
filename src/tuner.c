@@ -44,24 +44,26 @@ void perform_experiment(const char *server_name, const char *param, int pstart, 
 
 	for (param_value = pstart; param_value <= pend; param_value += pstride) {
 		int fsize;
+		char param_val[30];
+		if (strcmp(param, "tcp_rmem") && strcmp(param, "tcp_wmem")){
+			sprintf(param_val, "%d", param_value);
+		}
+		else
+			sprintf(param_val, "4096 %d %d", param_value, param_value);
+
+		if (set_param(param, param_val) < 0) {
+			fprintf(fp, "Parameter %s either does not exist or was not set correctly!!\n", param);
+			return;
+		};
 		//for (i=0; i<sizeof(flowsize)/sizeof(flowsize[0]); i++) {
 		for (fsize = fstart; fsize <= fend; fsize += fstride) {
 			struct metrics *ret_metrics;
 			error_t err;
-			char param_val[30];
-			if (strcmp(param, "tcp_rmem") && strcmp(param, "tcp_wmem")){
-				sprintf(param_val, "%d", param_value);
+			while (err=execute_test(server_name, fsize, &ret_metrics) < 0) {
+				printf("Error executing test.. Retrying..");
+				sleep(2);
 			}
-			else
-				sprintf(param_val, "4096 %d %d", param_value, param_value);
-
-			if (set_param(param, param_val) < 0) {
-				fprintf(fp, "Parameter %s either does not exist or was not set correctly!!\n", param);
-				return;
-			};
-			if (err=execute_test(server_name, fsize, &ret_metrics) < 0) {
-				printf("Error executing test");
-			}
+			sleep(1);
 			fprintf(fp, "%d %d %ld\n", fsize, param_value, ret_metrics->fct);
 		}
 		fprintf(fp, "\n");
@@ -93,7 +95,7 @@ error_t set_param(const char *name,  const char *value)
 	else
 		snprintf(command, sizeof(command), "/sbin/sysctl -w net.ipv4.%s=%s", name, value);
 
-	//printf("SET COMMAND = %s\n", command);
+	printf("SET COMMAND = %s\n", command);
 
 	if (system(command) != 0) {
 		return E_INVALID_PARAM;	
@@ -138,6 +140,7 @@ error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_
 
 	test = iperf_new_test();
 	if (!test) {
+		printf("COULD NOT INITIALIZE TEST\n");
 		return E_IPERF_TEST;	
 	}
 
@@ -153,6 +156,7 @@ error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_
 	/* Run the test */
 	(void) gettimeofday(&start, NULL);
 	if (iperf_run_client(test) < 0) {
+		printf("COULD NOT RUN CLIENT\n");
 		return E_IPERF_TEST;
 	}
 	(void) gettimeofday(&end, NULL);
@@ -161,6 +165,12 @@ error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_
 	*ret_metrics = (struct metrics *) malloc(sizeof(struct metrics));
 	(*ret_metrics)->fct = ((end.tv_sec * 1000000 + end.tv_usec)
                        - (start.tv_sec * 1000000 + start.tv_usec));
+	int i=0;
+	for (i=0; i<3; i++) {
+		(*ret_metrics)->cpu_util[i] = test->cpu_util[i];
+		//printf("%lf ", test->cpu_util[i]);
+	}
+	printf("\n");
 	//TODO: Also add throughput and size sent
 	iperf_reset_test(test);
 	return E_SUCCESS;
@@ -168,35 +178,37 @@ error_t execute_test(char *server_hostname, int flow_size, struct metrics **ret_
 
 void run_all_experiments(int fstart, int fend, int fstride) {
 
-
-	perform_experiment("dryad02", "tcp_rmem", 4096, 65536, 4096, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_timestamps", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_autocorking", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_adv_win_scale", 0, 5, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_app_win", 28, 31, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_abort_on_overflow", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_window_scaling", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_sack", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_dsack", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_syn_retries", 1, 10, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_retries1", 1, 10, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_retries2", 1, 10, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_syncookies", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_tw_recycle", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_fack", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_reordering", 0, 10, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_ecn", 0, 2, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_tw_reuse", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_frto", 0, 2, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_frto_response", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_no_metrics_save", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_low_latency", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_early_retrans", 0, 4, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_base_mss", 256, 2048, 256, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, fstart, fend, fstride);
-	perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, fstart, fend, fstride);
+//perform_experiment("dryad02", "tcp_rmem", 4096, 65536, 4096, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_timestamps", 0, 1, 1, fstart, fend, fstride);
+//perform_experiment("dryad02", "tcp_autocorking", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_adv_win_scale", 0, 3, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_app_win", 29, 31, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_abort_on_overflow", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_window_scaling", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_sack", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_dsack", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_syn_retries", 1, 5, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_synack_retries", 1, 5, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_retries1", 1, 10, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_retries2", 1, 10, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_syncookies", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_tw_recycle", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_fack", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_reordering", 0, 10, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_ecn", 0, 2, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_tw_reuse", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_frto", 0, 2, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_frto_response", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_no_metrics_save", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_low_latency", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, fstart, fend, fstride);
+//perform_experiment("dryad02", "tcp_early_retrans", 0, 4, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_base_mss", 256, 2048, 256, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_mtu_probing", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_slow_start_after_idle", 0, 1, 1, fstart, fend, fstride);
+perform_experiment("dryad02", "tcp_orphan_retries", 0, 5, 1, fstart, fend, fstride);
+//perform_experiment("dryad02", "tcp_stdurg", 0, 1, 1, fstart, fend, fstride);
 
 }
 
